@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_background">
+
+    <ImageView
+        android:id="@+id/login_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/login_logo"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/login_fields"/>
+
+    <LinearLayout
+        android:id="@+id/login_fields"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/login_fields_bg"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="80dp"
+        android:layout_marginTop="80dp">
+
+        <EditText
+            android:id="@+id/edt_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/login_username"
+            android:drawablePadding="10dp"
+            android:hint="用户名"
+            android:padding="10dp"
+            android:layout_weight="1"/>
+
+        <EditText
+            android:id="@+id/edt_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/login_password"
+            android:drawablePadding="10dp"
+            android:hint="密码"
+            android:padding="10dp"
+            android:layout_weight="1"
+            android:inputType="textPassword"/>
+
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/login_btn_bg"
+            android:layout_weight="1"
+            android:text="登录"
+            android:textColor="#ffffff"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_regist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="注册"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@id/login_fields"
+        android:layout_marginBottom="40dp"/>
+
+    <TextView
+        android:id="@+id/txt_forget_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="忘记密码"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@id/login_fields"
+        android:layout_marginBottom="40dp"/>
+
+</RelativeLayout>
