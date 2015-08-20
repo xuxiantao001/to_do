@@ -2,7 +2,10 @@ package com.mark.to_do;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -15,14 +18,26 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Created by xuxiantao on 2015/8/15.
  */
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private final static int NONE = 0;
+    private final static int PHOTOHRAPH = 1;
+    private final static int PHOTOZOOM = 2;
+    private final static int PHOTORESOULT = 3;
+    private final static String IMAGE_UNSPECIFIED = "image/*";
+
     private ImageView mImgBack;
     private ImageView mImgDone;
     private ImageView mImgCamera;
+    private CircleImageView mImgHeadIcon;
     private TextView mTxtSignUp;
 
     private Dialog dialog;
@@ -51,6 +66,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         mTxtSignUp = (TextView) findViewById(R.id.txt_sign_up);
         mTxtSignUp.setOnClickListener(this);
+
+        mImgHeadIcon = (CircleImageView) findViewById(R.id.img_head_icon);
     }
 
     @Override
@@ -77,18 +94,54 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.btn_gallery:
                 Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 galleryIntent.setType("image/*");
-                startActivityForResult(Intent.createChooser(galleryIntent, "选择一张照片"), 0);
+                startActivityForResult(galleryIntent, PHOTOZOOM);
                 break;
 
             case R.id.btn_camera:
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, 0);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp.jpg")));
+                startActivityForResult(cameraIntent, PHOTOHRAPH);
                 break;
 
             case R.id.btn_cancel:
                 dialog.dismiss();
                 break;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if(resultCode == NONE) {
+            return;
+        }
+
+        if(requestCode == PHOTOHRAPH) {
+            File picture = new File(Environment.getExternalStorageDirectory() + "/temp.jpg");
+            startPhotoZoom(Uri.fromFile(picture));
+        }
+
+        if(data == null) {
+            return;
+        }
+
+        if(requestCode == PHOTOZOOM) {
+            startPhotoZoom(data.getData());
+        }
+
+        if(requestCode == PHOTORESOULT) {
+            Bundle bundle = data.getExtras();
+            if(bundle != null) {
+                Bitmap photo = bundle.getParcelable("data");
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                photo.compress(Bitmap.CompressFormat.JPEG, 75, stream);
+                mImgCamera.setVisibility(View.GONE);
+                mImgHeadIcon.setImageBitmap(photo);
+                mImgHeadIcon.setVisibility(View.VISIBLE);
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void showDialog() {
@@ -115,5 +168,17 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         dialog.onWindowAttributesChanged(wl);
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
+    }
+
+    private void startPhotoZoom(Uri uri) {
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, IMAGE_UNSPECIFIED);
+        intent.putExtra("crop", "true");
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        intent.putExtra("outputX", 100);
+        intent.putExtra("outputY", 100);
+        intent.putExtra("return-data", true);
+        startActivityForResult(intent, PHOTORESOULT);
     }
 }
